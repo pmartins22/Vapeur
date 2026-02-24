@@ -28,7 +28,7 @@
 
         <div class="button-group">
             <a href="login.php" class="btn btn-primary">Login</a>
-            <a href="register.php" class="btn btn-secondary">Register</a>
+            
         </div>
     </div>
 </body>
