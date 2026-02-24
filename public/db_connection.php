@@ -1,9 +1,16 @@
 <?php
-$servername = "mysql-vapeur-vapeur.i.aivencloud.com";
-$port = 17770;
-$username = "avnadmin";
-$password = "AVNS_-XoE6EKsHchyzf7ZeR-";
-$dbname = "defaultdb";
+import dotenv\Dotenv;
+
+// Load environment variables from .env file
+$dotenv = Dotenv::createImmutable(__DIR__ . '/../');
+$dotenv->load();
+
+// Get environment variables
+$servername = $_ENV['servername'];
+$port = $_ENV['port'];
+$username = $_ENV['username'];
+$password = $_ENV['password'];
+$dbname = $_ENV['dbname'];
 
 // Create connection
 $conn = new mysqli($servername, $username, $password, $dbname);
