@@ -1,0 +1,258 @@
+* {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --grass-top: #6ba639;
+            --grass-side: #558c2f;
+            --dirt: #8b6f47;
+            --accent: #7eca58;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--grass-top) 0%, var(--grass-side) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Arial', sans-serif;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        /* Texture de bruit pour plus de réalisme */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" /></filter><rect width="100" height="100" fill="rgba(0,0,0,0.03)" filter="url(%23noise)"/></svg>');
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.5;
+        }
+
+        .container {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            padding: 40px;
+            max-width: 800px;
+        }
+
+        /* Bloc Minecraft 3D stylisé */
+        .minecraft-block {
+            width: 300px;
+            height: 300px;
+            position: relative;
+            margin: 0 auto 50px;
+            animation: float 4s ease-in-out infinite;
+            perspective: 1000px;
+        }
+
+        .block-inner {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: rotate 20s linear infinite;
+        }
+
+        /* Faces du bloc */
+        .block-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 80px;
+            font-weight: bold;
+            border: 3px solid rgba(0, 0, 0, 0.2);
+        }
+
+        .face-top {
+            background: linear-gradient(135deg, var(--grass-top) 0%, var(--accent) 100%);
+            transform: rotateX(90deg) translateZ(150px);
+            color: #fff;
+        }
+
+        .face-front {
+            background: linear-gradient(180deg, var(--grass-top) 40%, var(--dirt) 100%);
+            transform: translateZ(150px);
+        }
+
+        .face-right {
+            background: var(--grass-side);
+            transform: rotateY(90deg) translateZ(150px);
+        }
+
+        .face-left {
+            background: var(--grass-side);
+            transform: rotateY(-90deg) translateZ(150px);
+        }
+
+        .face-back {
+            background: var(--grass-top);
+            transform: rotateY(180deg) translateZ(150px);
+        }
+
+        .face-bottom {
+            background: var(--dirt);
+            transform: rotateX(-90deg) translateZ(150px);
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-30px);
+            }
+        }
+
+        @keyframes rotate {
+            0% {
+                transform: rotateX(0deg) rotateY(0deg);
+            }
+            100% {
+                transform: rotateX(360deg) rotateY(360deg);
+            }
+        }
+
+        h1 {
+            font-size: 3.5em;
+            color: #fff;
+            text-shadow: 
+                4px 4px 0px rgba(0, 0, 0, 0.3),
+                -2px -2px 0px rgba(255, 255, 255, 0.2);
+            margin-bottom: 20px;
+            font-weight: 900;
+            letter-spacing: 2px;
+        }
+
+        p {
+            font-size: 1.3em;
+            color: rgba(255, 255, 255, 0.95);
+            line-height: 1.8;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 15px 35px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.3);
+            transition: left 0.5s ease;
+            z-index: -1;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #2d5c1f;
+            box-shadow: 0 8px 25px rgba(122, 202, 88, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(122, 202, 88, 0.6);
+        }
+
+        .btn-secondary {
+            background: var(--grass-side);
+            color: #fff;
+            box-shadow: 0 8px 25px rgba(85, 140, 47, 0.4);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(85, 140, 47, 0.6);
+        }
+
+        /* Éléments décoratifs */
+        .decoration {
+            position: fixed;
+            opacity: 0.15;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .deco-1 {
+            top: 10%;
+            left: 5%;
+            font-size: 150px;
+        }
+
+        .deco-2 {
+            bottom: 15%;
+            right: 8%;
+            font-size: 120px;
+        }
+
+        /* Mode sombre optionnel */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: linear-gradient(135deg, #5a9a2c 0%, #476e27 100%);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5em;
+            }
+
+            p {
+                font-size: 1em;
+            }
+
+            .minecraft-block {
+                width: 200px;
+                height: 200px;
+            }
+
+            .btn {
+                padding: 12px 25px;
+                font-size: 0.95em;
+            }
+        }
