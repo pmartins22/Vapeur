@@ -3,8 +3,8 @@
 class Router {
     private $routes = [];
 
-    public function add($uri, $arquivo) {
-        $this->routes[$uri] = $arquivo;
+    public function add($uri, $file) {
+        $this->routes[$uri] = $file;
     }
 
     public function resolve($uri) {
