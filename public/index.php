@@ -27,8 +27,8 @@
         <p>Bienvenue sur le site numéro 1 d'achat de jeux vidéo en ligne. Découvrez notre sélection de jeux aux couleurs du bloc d'herbe emblématique de Minecraft. Une ambiance pixelisée et verdoyante pour votre expérience web.</p>
 
         <div class="button-group">
-            <a href="login.php" class="btn btn-primary">Login</a>
-            <a href="register.php" class="btn btn-secondary">Register</a>
+            <a href="/login" class="btn btn-primary">Login</a>
+            <a href="/register" class="btn btn-secondary">Register</a>
         </div>
     </div>
 </body>

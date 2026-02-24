@@ -31,4 +31,5 @@ $router->add('/game/',     'public/game.php');
 $router->add('/register',  'public/register.php');
 $router->add('/login',     'public/login.php');
 
+#$router->printRoutes();
 $router->resolve($uri);

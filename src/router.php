@@ -9,7 +9,12 @@ class Router {
 
     public function resolve($uri) {
         foreach ($this->routes as $route => $file) {
-            if (str_ends_with($route, '/')) {
+            if ($route === '/') {
+                if ($uri === '/') {
+                    include $file;
+                    exit;
+                }
+            } elseif (str_ends_with($route, '/')) {
                 if (str_starts_with($uri, $route)) {
                     include $file;
                     exit;
@@ -24,5 +29,11 @@ class Router {
 
         http_response_code(404);
         include 'public/404.html';
+    }
+
+    public function printRoutes() {
+        foreach ($this->routes as $route => $file) {
+            error_log("ROTA: " . $route . " => " . $file);
+        }
     }
 }
