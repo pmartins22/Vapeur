@@ -28,7 +28,7 @@ class Router {
         }
 
         http_response_code(404);
-        include 'public/404.html';
+        include 'public/404.php';
     }
 
     public function printRoutes() {
