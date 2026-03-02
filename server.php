@@ -25,7 +25,7 @@ if (file_exists($staticFile) && !is_dir($staticFile)) {
 $router = new Router();
 $router->add('/',          'public/index.php');
 $router->add('/home',      'public/home.php');
-$router->add('/profile/',  'public/profile.php');
+$router->add('/profil',  'public/profil.php');
 $router->add('/admin',     'public/admin.php');
 $router->add('/game/',     'public/game.php');
 $router->add('/register',  'public/register.php');

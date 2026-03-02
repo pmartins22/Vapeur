@@ -156,7 +156,6 @@ function getTagColor($category) {
 
                         <div class="game-buttons">
                             <button class="game-button">Acheter</button>
-                            <button class="game-button game-button-secondary">Infos</button>
                         </div>
                     </div>
                 </div>
