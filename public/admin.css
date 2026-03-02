@@ -144,8 +144,36 @@ body::before {
     color: #fff;
 }
 
+.form-control::placeholder {
+    color: #fff;
+}
+
 textarea.form-control {
     resize: vertical;
+}
+
+.form-control-file {
+    padding: 6px 10px;
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.form-control-file::file-selector-button {
+    padding: 5px 12px;
+    background: var(--accent);
+    color: var(--dark);
+    border: none;
+    border-radius: 5px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 0.85em;
+    cursor: pointer;
+    margin-right: 10px;
+    transition: background 0.2s;
+}
+
+.form-control-file::file-selector-button:hover {
+    background: #8fd96a;
 }
 
 .achievement-row {
@@ -316,4 +344,14 @@ textarea.form-control {
     background: rgba(224, 82, 82, 0.3);
     border: 1px solid #e05252;
     color: #ffd0d0;
+}
+
+.btn-promote {
+    background: #4a90d9;
+    color: #fff;
+}
+
+.btn-promote:hover {
+    background: #357abd;
+    transform: translateY(-2px);
 }

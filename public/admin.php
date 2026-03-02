@@ -16,6 +16,45 @@ require_once __DIR__ . '/../src/db_connection.php';
 $message = "";
 $messageType = "";
 
+function uploadImage($fileKey, $subKey = null) {
+    $assetsDir = __DIR__ . '/../public/assets/';
+
+    if (!is_dir($assetsDir)) {
+        mkdir($assetsDir, 0755, true);
+    }
+
+    if ($subKey !== null) {
+        $file = [
+                'name'     => $_FILES[$fileKey]['name'][$subKey],
+                'tmp_name' => $_FILES[$fileKey]['tmp_name'][$subKey],
+                'error'    => $_FILES[$fileKey]['error'][$subKey],
+                'size'     => $_FILES[$fileKey]['size'][$subKey],
+        ];
+    } else {
+        $file = $_FILES[$fileKey];
+    }
+
+    if ($file['error'] !== UPLOAD_ERR_OK || empty($file['name'])) {
+        return '';
+    }
+
+    $ext     = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+    $allowed = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+
+    if (!in_array($ext, $allowed)) {
+        return '';
+    }
+
+    $filename = uniqid() . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '_', basename($file['name']));
+    $dest     = $assetsDir . $filename;
+
+    if (move_uploaded_file($file['tmp_name'], $dest)) {
+        return '../assets/' . $filename;
+    }
+
+    return '';
+}
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST['action'])) {
 
@@ -28,6 +67,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $messageType = "success";
             } else {
                 $message = "Error banning user.";
+                $messageType = "danger";
+            }
+            $stmt->close();
+        }
+
+        if ($_POST['action'] === 'promote_user') {
+            $userId = (int) $_POST['user_id'];
+            $stmt = $conn->prepare("UPDATE users SET role = 'admin' WHERE id = ?");
+            $stmt->bind_param("i", $userId);
+            if ($stmt->execute()) {
+                $message = "User promoted to admin.";
+                $messageType = "success";
+            } else {
+                $message = "Error promoting user.";
                 $messageType = "danger";
             }
             $stmt->close();
@@ -51,10 +104,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $name        = $_POST['name'];
             $type        = $_POST['type'];
             $description = $_POST['description'];
-            $image       = $_POST['image'];
             $difficulty  = $_POST['difficulty'];
             $price       = (float) $_POST['price'];
             $year        = (int) $_POST['year'];
+            $image       = uploadImage('image');
 
             $stmt = $conn->prepare("INSERT INTO games (name, type, description, image, difficulty, price, year) VALUES (?, ?, ?, ?, ?, ?, ?)");
             $stmt->bind_param("sssssdi", $name, $type, $description, $image, $difficulty, $price, $year);
@@ -68,8 +121,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     foreach ($_POST['achievement_name'] as $i => $achName) {
                         if (empty($achName)) continue;
                         $achDesc   = $_POST['achievement_desc'][$i] ?? '';
-                        $achIcon   = $_POST['achievement_icon'][$i] ?? '';
                         $achPoints = (int) ($_POST['achievement_points'][$i] ?? 0);
+                        $achIcon   = uploadImage('achievement_icon', $i);
                         $achStmt->bind_param("isssi", $lastGameId, $achName, $achDesc, $achIcon, $achPoints);
                         $achStmt->execute();
                     }
@@ -116,7 +169,7 @@ $conn->close();
     <div class="admin-grid">
         <section class="panel">
             <h2>Add New Game</h2>
-            <form method="post">
+            <form method="post" enctype="multipart/form-data">
                 <input type="hidden" name="action" value="add_game">
                 <div class="form-group">
                     <label>Name</label>
@@ -131,8 +184,8 @@ $conn->close();
                     <textarea name="description" class="form-control" rows="3"></textarea>
                 </div>
                 <div class="form-group">
-                    <label>Image URL</label>
-                    <input type="text" name="image" class="form-control">
+                    <label>Image</label>
+                    <input type="file" name="image" class="form-control form-control-file" accept="image/*">
                 </div>
                 <div class="form-group">
                     <label>Difficulty</label>
@@ -159,7 +212,7 @@ $conn->close();
                     <div class="achievement-row">
                         <input type="text"   name="achievement_name[]"   placeholder="Name"        class="form-control">
                         <input type="text"   name="achievement_desc[]"   placeholder="Description" class="form-control">
-                        <input type="text"   name="achievement_icon[]"   placeholder="Icon URL"    class="form-control">
+                        <input type="file"   name="achievement_icon[]"   accept="image/*"          class="form-control form-control-file">
                         <input type="number" name="achievement_points[]" placeholder="Points"      class="form-control">
                     </div>
                 </div>
@@ -177,16 +230,23 @@ $conn->close();
                             <span class="user-name"><?php echo htmlspecialchars($user['username']); ?></span>
                             <span class="user-email"><?php echo htmlspecialchars($user['email']); ?></span>
                             <span class="user-meta">
-                                    <span class="badge badge-<?php echo $user['role']; ?>"><?php echo $user['role']; ?></span>
-                                    <?php echo date('d/m/Y', strtotime($user['created_at'])); ?>
-                                </span>
+                                <span class="badge badge-<?php echo $user['role']; ?>"><?php echo $user['role']; ?></span>
+                                <?php echo date('d/m/Y', strtotime($user['created_at'])); ?>
+                            </span>
                         </div>
                         <?php if ($user['role'] !== 'admin'): ?>
-                            <form method="post" onsubmit="return confirm('Ban <?php echo htmlspecialchars($user['username']); ?>?')">
-                                <input type="hidden" name="action" value="ban_user">
-                                <input type="hidden" name="user_id" value="<?php echo $user['id']; ?>">
-                                <button type="submit" class="btn btn-danger">Ban</button>
-                            </form>
+                            <div style="display:flex; gap:6px;">
+                                <form method="post" onsubmit="return confirm('Promote <?php echo htmlspecialchars($user['username']); ?> to admin?')">
+                                    <input type="hidden" name="action" value="promote_user">
+                                    <input type="hidden" name="user_id" value="<?php echo $user['id']; ?>">
+                                    <button type="submit" class="btn btn-promote">Promote</button>
+                                </form>
+                                <form method="post" onsubmit="return confirm('Ban <?php echo htmlspecialchars($user['username']); ?>?')">
+                                    <input type="hidden" name="action" value="ban_user">
+                                    <input type="hidden" name="user_id" value="<?php echo $user['id']; ?>">
+                                    <button type="submit" class="btn btn-danger">Ban</button>
+                                </form>
+                            </div>
                         <?php else: ?>
                             <span class="protected">Protected</span>
                         <?php endif; ?>
@@ -203,11 +263,11 @@ $conn->close();
                         <div class="user-info">
                             <span class="user-name"><?php echo htmlspecialchars($game['name']); ?></span>
                             <span class="user-meta">
-                                    <span class="badge badge-user"><?php echo htmlspecialchars($game['type']); ?></span>
-                                    <?php echo htmlspecialchars($game['difficulty']); ?>
-                                    &middot; EUR <?php echo number_format($game['price'], 2); ?>
-                                    &middot; <?php echo htmlspecialchars($game['year']); ?>
-                                </span>
+                                <span class="badge badge-user"><?php echo htmlspecialchars($game['type']); ?></span>
+                                <?php echo htmlspecialchars($game['difficulty']); ?>
+                                &middot; EUR <?php echo number_format($game['price'], 2); ?>
+                                &middot; <?php echo htmlspecialchars($game['year']); ?>
+                            </span>
                         </div>
                         <form method="post" onsubmit="return confirm('Delete <?php echo htmlspecialchars($game['name']); ?>?')">
                             <input type="hidden" name="action" value="delete_game">
@@ -227,12 +287,12 @@ $conn->close();
         const row = document.createElement('div');
         row.className = 'achievement-row';
         row.innerHTML = `
-                <input type="text"   name="achievement_name[]"   placeholder="Name"        class="form-control">
-                <input type="text"   name="achievement_desc[]"   placeholder="Description" class="form-control">
-                <input type="text"   name="achievement_icon[]"   placeholder="Icon URL"    class="form-control">
-                <input type="number" name="achievement_points[]" placeholder="Points"      class="form-control">
-                <button type="button" class="btn btn-danger btn-sm" onclick="this.parentElement.remove()">x</button>
-            `;
+            <input type="text"   name="achievement_name[]"   placeholder="Name"        class="form-control">
+            <input type="text"   name="achievement_desc[]"   placeholder="Description" class="form-control">
+            <input type="file"   name="achievement_icon[]"   accept="image/*"          class="form-control form-control-file">
+            <input type="number" name="achievement_points[]" placeholder="Points"      class="form-control">
+            <button type="button" class="btn btn-danger btn-sm" onclick="this.parentElement.remove()">x</button>
+        `;
         list.appendChild(row);
     }
 </script>

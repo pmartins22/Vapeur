@@ -24,7 +24,7 @@ $stmtUser->fetch();
 $stmtUser->close();
 
 $stmtGames = $conn->prepare("
-    SELECT g.id, g.name, g.image, ug.date_added
+    SELECT g.id, g.name, g.image, ug.date_added, ug.time_played
     FROM user_games ug
     JOIN games g ON g.id = ug.game_id
     WHERE ug.user_id = ?
@@ -39,10 +39,12 @@ $stmtGames->close();
 $totalAch = 0;
 $unlockedAch = 0;
 $totalPoints = 0;
+$totalPlaytime = 0;
 $gamesWithAchievements = [];
 
 foreach ($purchasedGames as $game) {
     $gameId = $game['id'];
+    $totalPlaytime += $game['time_played'];
 
     $stmtAch = $conn->prepare("
         SELECT a.id, a.name, a.description, a.icon, a.points,
@@ -106,6 +108,10 @@ $globalProgress = $totalAch > 0 ? round(($unlockedAch / $totalAch) * 100) : 0;
                         <div class="stat-label">Jeux possédés</div>
                     </div>
                     <div class="stat">
+                        <div class="stat-value"><?php echo $totalPlaytime; ?>h</div>
+                        <div class="stat-label">Temps de jeu</div>
+                    </div>
+                    <div class="stat">
                         <div class="stat-value"><?php echo $unlockedAch; ?>/<?php echo $totalAch; ?></div>
                         <div class="stat-label">Succès</div>
                     </div>
@@ -158,6 +164,10 @@ $globalProgress = $totalAch > 0 ? round(($unlockedAch / $totalAch) * 100) : 0;
                         </div>
 
                         <div class="game-body">
+                            <div class="game-info-row">
+                                <span class="info-label">Temps de jeu :</span>
+                                <span class="info-value playtime"><?php echo $game['time_played']; ?>h</span>
+                            </div>
                             <div class="game-info-row">
                                 <span class="info-label">Succès :</span>
                                 <span class="info-value"><?php

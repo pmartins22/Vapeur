@@ -18,8 +18,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action']) && $_POST['a
     $check->store_result();
 
     if ($check->num_rows === 0) {
-        $stmt = $conn->prepare("INSERT INTO user_games (user_id, game_id) VALUES (?, ?)");
-        $stmt->bind_param("ii", $userId, $gameId);
+        $timePlayed = rand(0, 100);
+
+        $stmt = $conn->prepare("INSERT INTO user_games (user_id, game_id, time_played) VALUES (?, ?, ?)");
+        $stmt->bind_param("iii", $userId, $gameId, $timePlayed);
         $stmt->execute();
         $stmt->close();
 
