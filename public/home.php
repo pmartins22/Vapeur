@@ -22,6 +22,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action']) && $_POST['a
         $stmt->bind_param("ii", $userId, $gameId);
         $stmt->execute();
         $stmt->close();
+
+        $achResult = $conn->prepare("SELECT id FROM achievements WHERE game_id = ?");
+        $achResult->bind_param("i", $gameId);
+        $achResult->execute();
+        $achievements = $achResult->get_result()->fetch_all(MYSQLI_ASSOC);
+        $achResult->close();
+
+        foreach ($achievements as $ach) {
+            if (rand(0, 1)) {
+                $unlock = $conn->prepare("INSERT IGNORE INTO user_achievements (user_id, achievement_id) VALUES (?, ?)");
+                $unlock->bind_param("ii", $userId, $ach['id']);
+                $unlock->execute();
+                $unlock->close();
+            }
+        }
     }
 
     $check->close();
@@ -78,6 +93,9 @@ function getTagColor($category) {
 <body>
 <div class="wrapper">
     <header>
+        <div class="header-nav">
+            <a href="/profile" class="profile-btn">👤 Mon Profil</a>
+        </div>
         <h1>🎮 Vapeur</h1>
         <p class="subtitle">Une collection de titres innovants et immersifs</p>
         <div class="games-count"><?php echo $games->num_rows; ?> jeux disponibles</div>
