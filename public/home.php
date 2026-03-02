@@ -4,7 +4,7 @@ $games = [
     [
         'id' => 1,
         'title' => 'Echoes of Tomorrow',
-        'emoji' => '⏰',
+        'image' => 'assets/echoes-of-tomorrow.png',
         'description' => 'Un archiviste temporel explore les souvenirs du futur dans une boucle paradoxale.',
         'category' => 'Action / Aventure',
         'price' => '39,99 €',
@@ -14,7 +14,7 @@ $games = [
     [
         'id' => 2,
         'title' => 'Project: Deep Colony',
-        'emoji' => '🌊',
+        'image' => '../assets/deep-colony.png',
         'description' => 'Survie en colonie sous une planète océanique qui apprend de tes erreurs.',
         'category' => 'Gestion / Survie',
         'price' => '29,99 €',
@@ -24,7 +24,7 @@ $games = [
     [
         'id' => 3,
         'title' => 'Neon Veil',
-        'emoji' => '🧠',
+        'image' => '../assets/neon-veil.png',
         'description' => 'Voleur d\'identités mentales infiltrant des mégalopoles cyberpunk.',
         'category' => 'Cyberpunk / RPG',
         'price' => '44,99 €',
@@ -34,7 +34,7 @@ $games = [
     [
         'id' => 4,
         'title' => 'Mythforge Arena',
-        'emoji' => '⚡',
+        'image' => '../assets/mythforge-arena.png',
         'description' => 'Roguelike avec pouvoirs de différentes mythologies fusionnées.',
         'category' => 'Action / Roguelike',
         'price' => '24,99 €',
@@ -44,7 +44,7 @@ $games = [
     [
         'id' => 5,
         'title' => 'The Last Librarian',
-        'emoji' => '📚',
+        'image' => '../assets/the-last-librarian.png',
         'description' => 'Enquête puzzle où chaque livre débloque une mécanique unique.',
         'category' => 'Enquête / Puzzle',
         'price' => '19,99 €',
@@ -54,7 +54,7 @@ $games = [
     [
         'id' => 6,
         'title' => 'Drift Protocol',
-        'emoji' => '🏎️',
+        'image' => '../assets/drift-protocol.png',
         'description' => 'Courses interdimensionnelles où les circuits se transforment en temps réel.',
         'category' => 'Course / Sci-Fi',
         'price' => '34,99 €',
@@ -64,7 +64,7 @@ $games = [
     [
         'id' => 7,
         'title' => 'Eden.exe',
-        'emoji' => '🤖',
+        'image' => '../assets/eden-exe.png',
         'description' => 'Simulation où tu crées une IA qui remet en question tes décisions.',
         'category' => 'Simulation / IA',
         'price' => '27,99 €',
@@ -107,7 +107,7 @@ function getTagColor($category) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Page de jeu- Studio Création</title>
+    <title>Page de jeu - Studio Création</title>
     <link rel="stylesheet" href="home.css">
 </head>
 <body>
@@ -121,7 +121,17 @@ function getTagColor($category) {
         <div class="games-grid">
             <?php foreach ($games as $game): ?>
                 <div class="game-card">
-                    <div class="game-image"><?php echo $game['emoji']; ?></div>
+                    <div class="game-image">
+                        <?php 
+                            $ext = pathinfo($game['image'], PATHINFO_EXTENSION);
+                            if ($ext === 'html') {
+                                echo '<iframe src="' . htmlspecialchars($game['image']) . '" class="game-preview" title="' . htmlspecialchars($game['title']) . '"></iframe>';
+                            } else {
+                                echo '<img src="' . htmlspecialchars($game['image']) . '" alt="' . htmlspecialchars($game['title']) . '">';
+                            }
+                        ?>
+                    </div>
+                    
                     <div class="game-content">
                         <div class="game-category" style="background-color: <?php echo getTagColor($game['category']); ?>;">
                             <?php echo $game['category']; ?>
